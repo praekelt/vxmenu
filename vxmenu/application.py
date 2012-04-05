@@ -3,7 +3,10 @@ from twisted.internet.defer import inlineCallbacks
 from vumi.application import ApplicationWorker, SessionManager
 from vumi.utils import load_class_by_string
 
+
 class MenuApplicationWorker(ApplicationWorker):
+    flush_sessions = False
+
     @inlineCallbacks
     def startWorker(self):
         """
@@ -16,7 +19,8 @@ class MenuApplicationWorker(ApplicationWorker):
             prefix="%(worker_name)s:%(transport_name)s" % self.config,
             max_session_length=getattr(self, 'MAX_SESSION_LENGTH', None)
         )
-        self.redis_server.flushdb()
+        if self.flush_sessions:
+            self.redis_server.flushdb()
         yield super(MenuApplicationWorker, self).startWorker()
 
     @inlineCallbacks
@@ -30,7 +34,7 @@ class MenuApplicationWorker(ApplicationWorker):
     def consume_user_message(self, message):
         """
         Dynamically contruct menu based on user input.
-        If no session is found self.initial_menu is used as frist menu.
+        If no session is found self.initial_menu is constructed.
         """
         user_id = message.user()
         session = self.session_manager.load_session(user_id)

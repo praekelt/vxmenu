@@ -51,6 +51,7 @@ class Menu(object):
             session.update(resolved_choice[1])
             session['class'] = resolved_choice[2]
             self.process_response(choice)
-            self.response_menu = load_class_by_string(resolved_choice[2])(message, session)
+            self.response_menu = \
+                    load_class_by_string(resolved_choice[2])(message, session)
         else:
             self.response_menu = self
