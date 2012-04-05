@@ -7,30 +7,6 @@ from vumi.utils import load_class_by_string
 class MenuApplicationWorker(ApplicationWorker):
     flush_sessions = False
 
-    @inlineCallbacks
-    def startWorker(self):
-        """
-        Setup session manager.
-        """
-        self.redis_config = self.config.get('redis_config', {})
-        self.redis_server = redis.Redis(**self.redis_config)
-        self.session_manager = SessionManager(
-            r_server=self.redis_server,
-            prefix="%(worker_name)s:%(transport_name)s" % self.config,
-            max_session_length=getattr(self, 'MAX_SESSION_LENGTH', None)
-        )
-        if self.flush_sessions:
-            self.redis_server.flushdb()
-        yield super(MenuApplicationWorker, self).startWorker()
-
-    @inlineCallbacks
-    def stopWorker(self):
-        """
-        Stop session manager.
-        """
-        yield self.session_manager.stop()
-        yield super(MenuApplicationWorker, self).stopWorker()
-
     def consume_user_message(self, message):
         """
         Dynamically contruct menu based on user input.
@@ -58,3 +34,27 @@ class MenuApplicationWorker(ApplicationWorker):
 
         except Exception, e:
             self.reply_to(message, str(e))
+
+    @inlineCallbacks
+    def startWorker(self):
+        """
+        Setup session manager.
+        """
+        self.redis_config = self.config.get('redis_config', {})
+        self.redis_server = redis.Redis(**self.redis_config)
+        self.session_manager = SessionManager(
+            r_server=self.redis_server,
+            prefix="%(worker_name)s:%(transport_name)s" % self.config,
+            max_session_length=getattr(self, 'MAX_SESSION_LENGTH', None)
+        )
+        if self.flush_sessions:
+            self.redis_server.flushdb()
+        yield super(MenuApplicationWorker, self).startWorker()
+
+    @inlineCallbacks
+    def stopWorker(self):
+        """
+        Stop session manager.
+        """
+        yield self.session_manager.stop()
+        yield super(MenuApplicationWorker, self).stopWorker()
