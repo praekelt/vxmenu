@@ -3,7 +3,7 @@ from vumi.utils import load_class_by_string
 
 class Menu(object):
     """
-    Base class from which all dynamic menus should inherit.
+    Base class from which all menus should inherit.
     Provides logic for constructing menus and proceeding to subsequent menus.
     """
     text = None
