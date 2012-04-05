@@ -16,6 +16,7 @@ setup(
     install_requires=[
         'vumi',
     ],
+    test_suite="vxmenu.tests",
     include_package_data=True,
     classifiers = [
         "Programming Language :: Python",
